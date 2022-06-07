@@ -1,5 +1,5 @@
 #
-# Copyright 2016-2021, Cypress Semiconductor Corporation (an Infineon company) or
+# Copyright 2016-2022, Cypress Semiconductor Corporation (an Infineon company) or
 # an affiliate of Cypress Semiconductor Corporation.  All rights reserved.
 #
 # This software, including source code, documentation and related
@@ -88,6 +88,12 @@ CY_APP_DEFINES+=\
 
 ifeq ($(REMOTE_PROVISION_SRV),1)
 CY_APP_DEFINES += -DREMOTE_PROVISION_SERVER_SUPPORTED
+endif
+
+# value of the INCLUDE_TIME_AND_SCHEDULER defines if the Time and the Scheduler related models should be included in the device
+INCLUDE_TIME_AND_SCHEDULER ?= 0
+ifeq ($(INCLUDE_TIME_AND_SCHEDULER),1)
+CY_APP_DEFINES += -DTIME_AND_SCHEDULER_SUPPORT
 endif
 
 # value of the LOW_POWER_NODE defines mode. It can be normal node (0), or low power node (1)
