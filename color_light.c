@@ -52,7 +52,6 @@ extern wiced_bt_cfg_settings_t wiced_bt_cfg_settings;
  ******************************************************/
 #define MESH_PID                0x300B
 #define MESH_VID                0x0002
-#define MESH_CACHE_REPLAY_SIZE  0x0008
 
 #define MESH_LIGHT_HSL_HUE_MIN                  0
 #define MESH_LIGHT_HSL_HUE_MAX                  0xffff
@@ -73,7 +72,7 @@ extern wiced_bt_cfg_settings_t wiced_bt_cfg_settings;
  ******************************************************/
 static void     mesh_app_init(wiced_bool_t is_provisioned);
 static void     mesh_hsl_server_message_handler(uint8_t element_idx, uint16_t event, void *p_data);
-static void     mesh_light_hsl_process_set(uint8_t element_idx, wiced_bt_mesh_light_hsl_status_data_t *p_status);
+static void     mesh_light_hsl_process_status(uint8_t element_idx, wiced_bt_mesh_light_hsl_status_data_t *p_status);
 
 /******************************************************
  *          Variables Definitions
@@ -158,7 +157,6 @@ wiced_bt_mesh_core_config_t  mesh_config =
     .company_id         = MESH_COMPANY_ID_CYPRESS,                  // Company identifier assigned by the Bluetooth SIG
     .product_id         = MESH_PID,                                 // Vendor-assigned product identifier
     .vendor_id          = MESH_VID,                                 // Vendor-assigned product version identifier
-    .replay_cache_size  = MESH_CACHE_REPLAY_SIZE,                   // Number of replay protection entries, i.e. maximum number of mesh devices that can send application messages to this device.
     .features = WICED_BT_MESH_CORE_FEATURE_BIT_FRIEND | WICED_BT_MESH_CORE_FEATURE_BIT_RELAY | WICED_BT_MESH_CORE_FEATURE_BIT_GATT_PROXY_SERVER,   // Supports Friend, Relay and GATT Proxy
     .friend_cfg         =                                           // Configuration of the Friend Feature(Receive Window in Ms, messages cache)
     {
@@ -260,8 +258,8 @@ void mesh_hsl_server_message_handler(uint8_t element_idx, uint16_t event, void *
 
     switch (event)
     {
-    case WICED_BT_MESH_LIGHT_HSL_SET:
-        mesh_light_hsl_process_set(element_idx, (wiced_bt_mesh_light_hsl_status_data_t *)p_data);
+    case WICED_BT_MESH_LIGHT_HSL_STATUS:
+        mesh_light_hsl_process_status(element_idx, (wiced_bt_mesh_light_hsl_status_data_t *)p_data);
         break;
 
     default:
@@ -273,7 +271,7 @@ void mesh_hsl_server_message_handler(uint8_t element_idx, uint16_t event, void *
 /*
  * Command from the HSL, Lightness, Generic Level or On/Off client received to set the new level
  */
-void mesh_light_hsl_process_set(uint8_t element_idx, wiced_bt_mesh_light_hsl_status_data_t *p_status)
+void mesh_light_hsl_process_status(uint8_t element_idx, wiced_bt_mesh_light_hsl_status_data_t *p_status)
 {
     WICED_BT_TRACE("light hsl srv set present light:%d hue:%d sat:%d remaining time:%d\n",
             p_status->present.lightness, p_status->present.hue, p_status->present.saturation, p_status->remaining_time);
